@@ -1,0 +1,16 @@
+{
+  "name": "PixelPlay.Foundation.Unity",
+  "rootNamespace": "PixelPlay.Foundation.Unity",
+  "references": [
+    "PixelPlay.Foundation"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -1,0 +1,17 @@
+{
+  "name": "com.pixelplay.foundation",
+  "version": "0.1.0",
+  "displayName": "Pixel Play Foundation",
+  "description": "Reusable, platform-independent gameplay systems for Pixel Play Unity projects.",
+  "unity": "2021.3",
+  "samples": [
+    {
+      "displayName": "Foundation Quick Start",
+      "description": "A timer and score demo with a TextMeshPro HUD in a Unity scene.",
+      "path": "Samples~/Foundation Quick Start"
+    }
+  ],
+  "author": {
+    "name": "Pixel Play"
+  }
+}
