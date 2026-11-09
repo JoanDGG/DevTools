@@ -8,6 +8,7 @@ Reusable, platform-independent gameplay systems for Pixel Play Unity projects. T
 - `ScoreCounter`: integer score with add, subtract, set, reset, and change event.
 - `IResettable`: small shared interface for systems with a reset operation.
 - `IKeyValueStore` and `PlayerPrefsKeyValueStore`: typed local preferences behind a platform-independent interface and an optional Unity adapter.
+- `IHttpClient`: platform-independent HTTP request/response contract with an optional `UnityWebRequest` adapter.
 
 The runtime assembly has no Unity engine references. A game can adapt Unity's frame loop to these systems and choose scaled or unscaled time.
 
@@ -29,6 +30,27 @@ settings.SetInt("high-score", 1200);
 settings.Save();
 int highScore = settings.GetInt("high-score", 0);
 ```
+
+## HTTP requests
+
+Game logic can depend on `IHttpClient`; Unity projects can provide `UnityWebRequestHttpClient`. HTTP error status codes are returned in `HttpResponseData` for the caller to handle. Connection and data-processing failures throw `HttpTransportException`, and cancellation throws `OperationCanceledException`.
+
+```csharp
+using PixelPlay.Foundation.Networking;
+using PixelPlay.Foundation.Unity.Networking;
+
+IHttpClient http = new UnityWebRequestHttpClient();
+HttpResponseData response = await http.SendAsync(
+    new HttpRequestData("https://example.com/api/health", timeoutSeconds: 10),
+    cancellationToken);
+
+if (response.IsSuccessStatusCode)
+    UnityEngine.Debug.Log(response.BodyText);
+else
+    UnityEngine.Debug.LogWarning($"Server returned HTTP {response.StatusCode}");
+```
+
+For a POST, pass a method, UTF-8 body, and headers to `HttpRequestData`; for example, add a `Content-Type: application/json` header. The module does not choose a JSON library or backend, and it does not log request headers or bodies.
 
 ## Quick start
 
