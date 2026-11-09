@@ -7,7 +7,8 @@
 3. Let projects connect systems to Unity lifecycle, UI, input, and services through thin adapters.
 4. Keep optional SDK integrations out of the base runtime assembly.
 5. Return HTTP status errors as responses so game code can handle API-specific outcomes; reserve transport exceptions for communication failures.
-6. Include a concise usage example and document edge behavior for each public system.
+6. Inject serializers and service-specific behavior instead of coupling the HTTP core to a vendor or JSON package.
+7. Include a concise usage example and document edge behavior for each public system.
 
 ## Layout
 

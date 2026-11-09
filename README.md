@@ -9,6 +9,7 @@ Reusable, platform-independent gameplay systems for Pixel Play Unity projects. T
 - `IResettable`: small shared interface for systems with a reset operation.
 - `IKeyValueStore` and `PlayerPrefsKeyValueStore`: typed local preferences behind a platform-independent interface and an optional Unity adapter.
 - `IHttpClient`: platform-independent HTTP request/response contract with an optional `UnityWebRequest` adapter.
+- `JsonHttpClient`: composes the HTTP transport with an injectable JSON serializer; Unity also has a `JsonUtility` adapter.
 
 The runtime assembly has no Unity engine references. A game can adapt Unity's frame loop to these systems and choose scaled or unscaled time.
 
@@ -50,7 +51,38 @@ else
     UnityEngine.Debug.LogWarning($"Server returned HTTP {response.StatusCode}");
 ```
 
-For a POST, pass a method, UTF-8 body, and headers to `HttpRequestData`; for example, add a `Content-Type: application/json` header. The module does not choose a JSON library or backend, and it does not log request headers or bodies.
+For JSON requests, compose `JsonHttpClient` with a serializer. The Unity adapter uses serializable DTO classes with public fields; projects that need broader JSON support can provide another `IJsonSerializer` implementation.
+
+```csharp
+using System;
+using System.Threading;
+using PixelPlay.Foundation.Networking;
+using PixelPlay.Foundation.Unity.Networking;
+
+[Serializable]
+public class ScoreUpload
+{
+    public string playerId;
+    public int score;
+}
+
+[Serializable]
+public class ScoreReply
+{
+    public string message;
+}
+
+var json = new JsonHttpClient(new UnityWebRequestHttpClient(), new UnityJsonUtilitySerializer());
+JsonHttpResponse<ScoreReply> result = await json.SendJsonAsync<ScoreUpload, ScoreReply>(
+    "https://example.com/api/scores", "POST",
+    new ScoreUpload { playerId = "player-1", score = 1200 },
+    cancellationToken: CancellationToken.None);
+
+if (result.IsSuccessStatusCode)
+    UnityEngine.Debug.Log(result.Payload.message);
+```
+
+`JsonUtility` has serialization limits (for example, it is not a general-purpose dictionary serializer). The module does not log request headers or bodies.
 
 ## Quick start
 
