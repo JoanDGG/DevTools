@@ -1,0 +1,25 @@
+{
+  "name": "PixelPlay.Foundation.Unity.InputSystem",
+  "rootNamespace": "PixelPlay.Foundation.Unity.InputSystem",
+  "references": [
+    "PixelPlay.Foundation",
+    "Unity.InputSystem"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [
+    "PIXELPLAY_INPUT_SYSTEM_PACKAGE"
+  ],
+  "versionDefines": [
+    {
+      "name": "com.unity.inputsystem",
+      "expression": "1.0.0",
+      "define": "PIXELPLAY_INPUT_SYSTEM_PACKAGE"
+    }
+  ],
+  "noEngineReferences": false
+}

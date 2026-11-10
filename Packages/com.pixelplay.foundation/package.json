@@ -9,6 +9,41 @@
       "displayName": "Foundation Quick Start",
       "description": "A timer and score demo with a TextMeshPro HUD in a Unity scene.",
       "path": "Samples~/Foundation Quick Start"
+    },
+    {
+      "displayName": "Game Flow Quick Start",
+      "description": "A menu, gameplay, pause, and results flow using the generic state machine.",
+      "path": "Samples~/Game Flow Quick Start"
+    },
+    {
+      "displayName": "Input System Quick Start",
+      "description": "Maps logical input actions to movement and confirmation through the Unity Input System.",
+      "path": "Samples~/Input System Quick Start"
+    },
+    {
+      "displayName": "UI Drag and Drop Quick Start",
+      "description": "Demonstrates reusable UI drag items and typed drop targets across pointer devices.",
+      "path": "Samples~/UI Drag and Drop Quick Start"
+    },
+    {
+      "displayName": "Webcam Preview Quick Start",
+      "description": "Requests camera permission, starts a selected webcam, and displays its live feed in UI.",
+      "path": "Samples~/Webcam Preview Quick Start"
+    },
+    {
+      "displayName": "Tracking Provider Quick Start",
+      "description": "Shows an SDK-independent tracking contract with an animated mock skeleton and debug overlay.",
+      "path": "Samples~/Tracking Provider Quick Start"
+    },
+    {
+      "displayName": "Runtime Debug Quick Start",
+      "description": "Shows live FPS, platform, logs, and editable per-project game values in a development panel.",
+      "path": "Samples~/Runtime Debug Quick Start"
+    },
+    {
+      "displayName": "Gesture Recognition Quick Start",
+      "description": "Filters provider gesture candidates with confidence hysteresis and stable start/end events.",
+      "path": "Samples~/Gesture Recognition Quick Start"
     }
   ],
   "author": {

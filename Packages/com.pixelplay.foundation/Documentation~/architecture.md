@@ -13,9 +13,20 @@
 ## Layout
 
 - `Runtime/Core`: shared contracts and small primitives.
+- `Runtime/Events`: typed event contracts and a single-thread event bus.
+- `Runtime/Input`: device-independent logical input contracts and value types.
+- `Runtime/Tracking`: SDK-independent tracked entity, landmark, frame, error, and provider contracts.
+- `Runtime/Debugging`: engine-independent runtime tunable registry and typed bounded values.
+- `Runtime/Gestures`: SDK-independent hand gesture candidate, frame, provider, and stabilization filter contracts.
 - `Runtime/<Feature>`: runtime systems grouped by capability.
 - `Runtime/Networking`: transport-independent HTTP contracts and data types.
+- `Runtime/StateMachine`: platform-independent game flow state lifecycle.
 - `Runtime/Unity`: optional Unity-specific adapters in a separate assembly.
+- `Runtime/Unity/UI`: EventSystem-based reusable UI drag and drop components, compiled when Unity UI is installed.
+- `Runtime/Unity/Camera`: Unity webcam preview and device lifecycle adapter, compiled when Unity UI is installed.
+- `Runtime/Unity/Tracking`: Unity screen-space debug visualization for tracking frames.
+- `Runtime/Unity/Debugging`: per-project Inspector tuning definitions and the development diagnostics panel.
+- `Runtime/Unity/Gestures`: Unity lifecycle bridge between gesture providers and the core filter.
 - `Editor`: future editor-only tooling, in its own assembly.
 - `Samples~`: optional sample content, imported through Package Manager.
 - `Documentation~`: package documentation, excluded from consuming builds.

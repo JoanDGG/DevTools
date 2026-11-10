@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PixelPlay.Foundation.Samples
 {
-    /// <summary>Displays a Foundation Quick Start timer and score using TextMeshPro UI fields.</summary>
+    /// <summary>Displays the Foundation Quick Start timer and score with TextMeshPro.</summary>
     public sealed class FoundationQuickStartHUD : MonoBehaviour
     {
         [SerializeField] private FoundationQuickStart source;
@@ -16,7 +16,6 @@ namespace PixelPlay.Foundation.Samples
         {
             if (source == null)
                 source = GetComponent<FoundationQuickStart>();
-
             if (source == null)
             {
                 Debug.LogError("FoundationQuickStartHUD requires a FoundationQuickStart source.", this);
@@ -33,7 +32,6 @@ namespace PixelPlay.Foundation.Samples
         {
             if (source == null)
                 return;
-
             source.TimerUpdated -= UpdateTimer;
             source.ScoreUpdated -= UpdateScore;
         }
