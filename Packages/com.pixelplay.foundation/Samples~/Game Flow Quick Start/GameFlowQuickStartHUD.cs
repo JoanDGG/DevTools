@@ -31,12 +31,23 @@ namespace PixelPlay.Foundation.Samples
 
             _subscription = source.Events.Subscribe<GameFlowQuickStart.FlowStateChangedEvent>(HandleStateChanged);
             UpdateState(source.CurrentState);
+
+            SubscribeButtons();
         }
 
         private void OnDisable()
         {
             _subscription?.Dispose();
             _subscription = null;
+        }
+
+        private void SubscribeButtons()
+        {
+            if (startButton != null) startButton.onClick.AddListener(source.StartGame);
+            if (pauseButton != null) pauseButton.onClick.AddListener(source.PauseGame);
+            if (resumeButton != null) resumeButton.onClick.AddListener(source.ResumeGame);
+            if (finishButton != null) finishButton.onClick.AddListener(source.FinishGame);
+            if (returnButton != null) returnButton.onClick.AddListener(source.ReturnToMenu);
         }
 
         private void HandleStateChanged(GameFlowQuickStart.FlowStateChangedEvent change) => UpdateState(change.State);
