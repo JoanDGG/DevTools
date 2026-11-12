@@ -4,6 +4,9 @@
   "displayName": "Pixel Play Foundation",
   "description": "Reusable, platform-independent gameplay systems for Pixel Play Unity projects. See Samples for quick start demos.",
   "unity": "2021.3",
+  "dependencies": {
+    "com.unity.textmeshpro": "3.0.9"
+  },
   "samples": [
     {
       "displayName": "Foundation Quick Start",
