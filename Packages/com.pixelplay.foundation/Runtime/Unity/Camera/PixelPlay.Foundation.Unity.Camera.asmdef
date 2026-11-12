@@ -1,0 +1,26 @@
+{
+  "name": "PixelPlay.Foundation.Unity.Camera",
+  "rootNamespace": "PixelPlay.Foundation.Unity.Camera",
+  "references": [
+    "PixelPlay.Foundation",
+    "PixelPlay.Foundation.Unity",
+    "Unity.ugui"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [
+    "PIXELPLAY_UGUI_PACKAGE"
+  ],
+  "versionDefines": [
+    {
+      "name": "com.unity.ugui",
+      "expression": "1.0.0",
+      "define": "PIXELPLAY_UGUI_PACKAGE"
+    }
+  ],
+  "noEngineReferences": false
+}
