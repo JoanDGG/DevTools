@@ -10,6 +10,10 @@ namespace PixelPlay.Foundation.Gestures
     {
         private readonly ReadOnlyCollection<GestureCandidate> _candidates;
 
+        /// <summary>Creates an immutable frame with at most one candidate for each hand.</summary>
+        /// <param name="frameId">Provider frame number.</param>
+        /// <param name="timestampSeconds">Monotonic timestamp in seconds.</param>
+        /// <param name="candidates">Candidate snapshot; null is treated as an empty collection.</param>
         public GestureFrame(long frameId, double timestampSeconds, IEnumerable<GestureCandidate> candidates)
         {
             if (double.IsNaN(timestampSeconds) || double.IsInfinity(timestampSeconds) || timestampSeconds < 0d)
@@ -30,8 +34,11 @@ namespace PixelPlay.Foundation.Gestures
             _candidates = copy.AsReadOnly();
         }
 
+        /// <summary>Gets the provider frame number.</summary>
         public long FrameId { get; }
+        /// <summary>Gets the monotonic timestamp in seconds.</summary>
         public double TimestampSeconds { get; }
+        /// <summary>Gets the read-only candidate snapshot.</summary>
         public IReadOnlyList<GestureCandidate> Candidates => _candidates;
     }
 }

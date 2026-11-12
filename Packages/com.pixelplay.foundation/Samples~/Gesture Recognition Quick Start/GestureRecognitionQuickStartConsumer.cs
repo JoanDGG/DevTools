@@ -7,7 +7,7 @@ namespace PixelPlay.Foundation.Samples
     /// <summary>Logs filtered gesture start and end events.</summary>
     public sealed class GestureRecognitionQuickStartConsumer : MonoBehaviour
     {
-        [SerializeField] private GestureRecognitionFilterBehaviour gestureFilter;
+        [SerializeField, Tooltip("Gesture filter bridge whose start, end, and error events are displayed in the Console.")] private GestureRecognitionFilterBehaviour gestureFilter;
 
         private void OnEnable()
         {

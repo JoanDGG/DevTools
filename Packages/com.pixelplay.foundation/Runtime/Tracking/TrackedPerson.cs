@@ -9,6 +9,9 @@ namespace PixelPlay.Foundation.Tracking
     {
         private readonly ReadOnlyCollection<TrackedLandmark> _landmarks;
 
+        /// <summary>Creates a tracked entity and copies its landmarks into a read-only snapshot.</summary>
+        /// <param name="id">Stable entity ID assigned by the tracking provider.</param>
+        /// <param name="landmarks">Landmarks available in this frame; duplicate IDs are rejected.</param>
         public TrackedPerson(string id, IEnumerable<TrackedLandmark> landmarks)
         {
             if (string.IsNullOrWhiteSpace(id))

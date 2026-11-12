@@ -11,14 +11,20 @@ namespace PixelPlay.Foundation.Samples
         private long _frameId;
         private float _elapsed;
 
+        /// <inheritdoc />
         public bool IsRunning => _running;
+        /// <inheritdoc />
         public event System.Action<GestureFrame> FrameReceived;
+        /// <inheritdoc />
         public event System.Action<GestureProviderError> ErrorReported;
 
         private void OnEnable() => StartRecognition();
         private void OnDisable() => StopRecognition();
+        /// <inheritdoc />
         public void StartRecognition() => _running = true;
+        /// <inheritdoc />
         public void StopRecognition() => _running = false;
+        /// <summary>Emits a sample provider error for consumer UI testing.</summary>
         public void ReportError(string code, string message) => ErrorReported?.Invoke(new GestureProviderError(code, message));
 
         private void Update()

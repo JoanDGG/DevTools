@@ -6,10 +6,10 @@ namespace PixelPlay.Foundation.Unity.Tracking
     /// <summary>Draws normalized tracking landmarks over the game view for development.</summary>
     public sealed class TrackingFrameDebugOverlay : MonoBehaviour
     {
-        [SerializeField] private MonoBehaviour providerComponent;
-        [SerializeField, Range(0f, 1f)] private float minimumConfidence = 0.2f;
-        [SerializeField] private bool showLandmarkIds = true;
-        [SerializeField, Min(2f)] private float markerSize = 10f;
+        [SerializeField, Tooltip("Component implementing ITrackingProvider whose latest frame is drawn here.")] private MonoBehaviour providerComponent;
+        [SerializeField, Range(0f, 1f), Tooltip("Landmarks below this confidence are hidden.")] private float minimumConfidence = 0.2f;
+        [SerializeField, Tooltip("Draws each landmark's provider-defined ID next to its marker.")] private bool showLandmarkIds = true;
+        [SerializeField, Min(2f), Tooltip("Diameter of each landmark marker in screen pixels.")] private float markerSize = 10f;
 
         private readonly object _frameLock = new object();
         private ITrackingProvider _provider;

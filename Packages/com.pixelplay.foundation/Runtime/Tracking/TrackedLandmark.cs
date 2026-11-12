@@ -6,6 +6,12 @@ namespace PixelPlay.Foundation.Tracking
     /// <remarks>X and Y use a top-left image origin. Depth units are provider-defined.</remarks>
     public readonly struct TrackedLandmark
     {
+        /// <summary>Creates a landmark in normalized source-image coordinates.</summary>
+        /// <param name="id">Provider-stable landmark ID such as <c>left_wrist</c>.</param>
+        /// <param name="normalizedX">Horizontal coordinate; zero is the left edge and one is the right edge.</param>
+        /// <param name="normalizedY">Vertical coordinate; zero is the top edge and one is the bottom edge.</param>
+        /// <param name="depth">Depth value in units defined by the provider.</param>
+        /// <param name="confidence">Confidence in the inclusive range zero to one.</param>
         public TrackedLandmark(string id, float normalizedX, float normalizedY, float depth, float confidence)
         {
             if (string.IsNullOrWhiteSpace(id))

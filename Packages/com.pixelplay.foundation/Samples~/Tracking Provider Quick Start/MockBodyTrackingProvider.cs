@@ -11,15 +11,21 @@ namespace PixelPlay.Foundation.Samples
         private long _frameId;
         private float _elapsed;
 
+        /// <inheritdoc />
         public bool IsRunning => _running;
+        /// <inheritdoc />
         public event System.Action<TrackingFrame> FrameReceived;
+        /// <inheritdoc />
         public event System.Action<TrackingError> ErrorReported;
 
         private void OnEnable() => StartTracking();
         private void OnDisable() => StopTracking();
+        /// <inheritdoc />
         public void StartTracking() => _running = true;
+        /// <inheritdoc />
         public void StopTracking() => _running = false;
 
+        /// <summary>Emits a sample provider error for consumer UI testing.</summary>
         public void ReportError(string code, string message) =>
             ErrorReported?.Invoke(new TrackingError(code, message));
 

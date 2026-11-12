@@ -9,13 +9,13 @@ namespace PixelPlay.Foundation.Samples
     /// <summary>Reflects game flow state in a simple TextMeshPro HUD and button set.</summary>
     public sealed class GameFlowQuickStartHUD : MonoBehaviour
     {
-        [SerializeField] private GameFlowQuickStart source;
-        [SerializeField] private TextMeshProUGUI stateLabel;
-        [SerializeField] private Button startButton;
-        [SerializeField] private Button pauseButton;
-        [SerializeField] private Button resumeButton;
-        [SerializeField] private Button finishButton;
-        [SerializeField] private Button returnButton;
+        [SerializeField, Tooltip("Flow controller whose state and status events update this HUD.")] private GameFlowQuickStart source;
+        [SerializeField, Tooltip("TextMeshPro label displaying the current game state and latest status.")] private TextMeshProUGUI stateLabel;
+        [SerializeField, Tooltip("Starts a round or restarts it after returning to the menu.")] private Button startButton;
+        [SerializeField, Tooltip("Pauses the active round.")] private Button pauseButton;
+        [SerializeField, Tooltip("Resumes a paused round.")] private Button resumeButton;
+        [SerializeField, Tooltip("Ends the active round and moves to the results state.")] private Button finishButton;
+        [SerializeField, Tooltip("Returns from results to the menu.")] private Button returnButton;
 
         private IDisposable _subscription;
 

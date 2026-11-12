@@ -9,6 +9,13 @@ namespace PixelPlay.Foundation.Gestures
         private readonly Dictionary<string, HandState> _states =
             new Dictionary<string, HandState>(StringComparer.Ordinal);
 
+        /// <summary>Creates a filter with confidence hysteresis and temporal stability thresholds.</summary>
+        /// <param name="startConfidence">Minimum confidence for activating a candidate.</param>
+        /// <param name="releaseConfidence">Minimum confidence that keeps an active matching gesture alive.</param>
+        /// <param name="activationSeconds">Stable time required before a candidate starts.</param>
+        /// <param name="releaseSeconds">Time a weak or missing candidate is tolerated before ending.</param>
+        /// <exception cref="ArgumentException">The release threshold is higher than the start threshold.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">A threshold or duration is outside its supported range.</exception>
         public GestureRecognitionFilter(float startConfidence = 0.7f, float releaseConfidence = 0.45f,
             float activationSeconds = 0.12f, float releaseSeconds = 0.18f)
         {

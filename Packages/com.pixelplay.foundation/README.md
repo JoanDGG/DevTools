@@ -11,19 +11,36 @@ Reusable, platform-independent gameplay systems for Pixel Play Unity projects. T
 - `IKeyValueStore` and `PlayerPrefsKeyValueStore`: typed local preferences behind a platform-independent interface and an optional Unity adapter.
 - `GameStateMachine`: one-at-a-time state lifecycle manager with explicit entry, exit, and tick calls.
 - `IInputActionReader`: device-independent action queries with portable scalar, vector, and rotation value types; Unity Input System support is an optional adapter.
+- `InputSystemMovementController` and `ArcadeVehicleInputController`: optional Unity Input System movement modes for 2D/3D characters and arcade vehicles.
 - `RuntimeTuningRegistry`: typed, bounded per-project values with change notifications and reset-to-default support.
+- `QrCodeEncoder`: dependency-free UTF-8 QR encoding for short URLs and text, with a Unity texture adapter.
 - `IHttpClient`: platform-independent HTTP request/response contract with an optional `UnityWebRequest` adapter.
 - `JsonHttpClient`: composes the HTTP transport with an injectable JSON serializer; Unity also has a `JsonUtility` adapter.
 - `MultipartFormDataBuilder`: creates multipart requests with text fields and binary file parts.
 - `BearerTokenHttpClient`: decorates an HTTP transport with a token from an injectable access-token provider.
+- `ObjectPool<T>` and `GameObjectPool`: bounded reusable object pools with prewarming and explicit acquire/release lifecycle.
+- `StringInputSetter`: converts UI text into a supported primitive or enum and invokes a configured public setter.
+- `SingletonBehaviour<T>`: reusable scene-level singleton base for Unity components, without third-party networking dependencies.
 
 The runtime assembly has no Unity engine references. A game can adapt Unity's frame loop to these systems and choose scaled or unscaled time.
 
+## Automated tests
+
+The package includes Editor EditMode tests for the engine-independent timer, scoring, event bus, state machine, runtime tuning, gesture filter, QR encoder, JSON save slots, multipart request builder, and object pool. Open **Window > General > Test Runner**, choose **EditMode**, and run the tests. The test assembly is Editor-only and is excluded from player builds. When consuming the package through Git or a registry, add `com.pixelplay.foundation` to the project's `testables` array in `Packages/manifest.json` to expose its package tests in Test Runner. Unity's Test Framework must be installed in the consuming project.
+
+## Object pooling
+
+Use `ObjectPool<T>` for engine-independent factories, or add `GameObjectPool` to a scene object and assign a prefab to reuse projectiles, effects, or other temporary objects. Configure the initial prewarm count and maximum retained count in the Inspector. Call `Acquire(position, rotation)` to get an instance and `Release(instance)` when it is done; objects beyond the inactive capacity are destroyed. Assign an optional **Spawn Point** to use its position and rotation with `AcquireAtSpawnPoint`; the offset overload takes a local-space offset. Set **Default Lifetime Seconds** to automatically release each acquired object after that many scaled game seconds, or call `AcquireWithLifetime(position, rotation, seconds)` to choose a lifetime for one instance. A lifetime of zero disables timed release. Manual `Release` cancels that object's timer. Expiration uses a min-heap so each frame checks the earliest deadline and processes only objects that have expired. `ReleaseAll` returns every checked-out instance, while `ClearInactive` destroys only objects currently waiting in the pool. Do not destroy borrowed instances directly; return them to their owning pool.
+
+Import **Object Pool Quick Start** from Package Manager's **Samples** tab. Add `GameObjectPool` to a controller, assign its prefab, then add `ObjectPoolQuickStart` and assign the pool. Enable **Initialize Pool On Start** to prewarm when the sample starts; otherwise initialization happens on the first spawn. The public `SpawnPooledObject` and `ReleaseSpawnedObjects` methods can be connected to UI Buttons. The sample also keeps **Spawn Pooled Object** and **Release All Spawned Objects** in the component context menu.
+
+Pooling reduces repeated creation and destruction, but it does not remove the CPU, physics, or rendering cost of keeping many GameObjects active. For large counts, profile first and prewarm near the expected peak to avoid runtime allocations. If instances are visually identical and need no individual GameObject behavior, use a separate GPU-instanced renderer; Unity's `Graphics.RenderMeshInstanced` renders up to 1023 instances per call and requires a compatible instancing shader. For large CPU simulations, keep state in data arrays and consider Jobs/Burst; use Entities Graphics when the project is already adopting DOTS. These approaches are not drop-in replacements for this pool because they do not provide arbitrary MonoBehaviours or per-instance Rigidbody behavior. See Unity's [GPU instancing documentation](https://docs.unity3d.com/Manual/GPUInstancing.html), [`RenderMeshInstanced` API](https://docs.unity3d.com/6000.0/ScriptReference/Graphics.RenderMeshInstanced.html), and [Job System overview](https://docs.unity3d.com/Manual/JobSystemOverview.html).
+
 ## Runtime debug panel and tuning values
 
-Use `RuntimeTuningRegistry` to define editable float, integer, and boolean values with categories, defaults, ranges, and change events. A project can register values in code or define them on `RuntimeTuningRegistryBehaviour` in the Inspector. Game code reads these same values, so adjusting them in the panel changes what the game uses immediately. `RuntimeDebugPanel` displays FPS, frame time, platform, screen size, allocated memory, and recent warnings/errors. It is shown in the Editor and development builds by default, and its visibility methods can be wired to a project's own input actions or UI. Values reset to their defaults on application restart; persistence is left to the project.
+Use `RuntimeTuningRegistry` to define editable float, integer, and boolean values with categories, defaults, ranges, and change events. A project can register values in code or define them on `RuntimeTuningRegistryBehaviour` in the Inspector. Game code reads these same values, so adjusting them in the panel changes what the game uses immediately. `RuntimeDebugPanel` displays FPS, frame time, platform, screen size, allocated memory, and recent warnings/errors. It is shown in the Editor and development builds by default, and its visibility methods can be wired to a project's own input actions or UI. Persistence is opt-in: enable it on the panel to show **Save Values** and **Load Saved**, and optionally load values automatically when the panel is enabled. It stores local values through PlayerPrefs with a configurable key prefix; saved values outside current bounds are ignored.
 
-Import **Runtime Debug Quick Start** from Package Manager's **Samples** tab. Add `RuntimeTuningRegistryBehaviour`, `RuntimeDebugPanel`, and `RuntimeDebugQuickStartConsumer` to a GameObject, then assign the registry to the other components. The consumer adds defaults for `round.duration` and `round.count` if those IDs are not already configured. To customize them in the Inspector, add definitions with those IDs, float/integer types, and ranges; the sample logs changes and the **Log Current Game Settings** context action prints the current values. Set `developmentBuildOnly` off only when you intentionally want the panel in a non-development player.
+Import **Runtime Debug Quick Start** from Package Manager's **Samples** tab. Add `RuntimeTuningRegistryBehaviour`, `RuntimeDebugPanel`, and `RuntimeDebugQuickStartConsumer` to a GameObject, then assign the registry to the other components. The consumer adds defaults for `round.duration` and `round.count` if those IDs are not already configured. To customize them in the Inspector, add definitions with those IDs, float/integer types, and ranges; the sample logs changes and the **Log Current Game Settings** context action prints the current values. Enable **Persistence** on the panel to show **Save Values** and **Load Saved**, or enable automatic load on component activation. Set `developmentBuildOnly` off only when you intentionally want the panel in a non-development player.
 
 ```csharp
 RuntimeTuningRegistry registry = tuningRegistry.Registry;
@@ -51,6 +68,18 @@ Import **Gesture Recognition Quick Start** from Package Manager's **Samples** ta
 
 A real SDK adapter should implement `IHandGestureProvider` and publish its strongest candidate for each visible hand. The Unity bridge can optionally start the provider when enabled and stop it when disabled; leave those options off when another system owns the provider lifecycle. Tune confidence and duration thresholds per provider; this module filters classifications but does not analyze camera pixels or infer gestures from landmarks.
 
+## XR session providers
+
+`IXRSessionProvider` defines an asynchronous lifecycle for VR, AR, and mixed reality runtimes: start, pause, resume, and stop. It exposes lifecycle state and runtime error events while keeping Unity XR Management, AR Foundation, OpenXR, and vendor SDKs outside the core assembly. Implement the contract in a project adapter for the XR stack selected by that project.
+
+Import **XR Session Quick Start** from Package Manager's **Samples** tab, add `XRSessionQuickStart` to a GameObject, then use its component context menu to start, pause, resume, stop, or emit a mock runtime error. The mock demonstrates the contract only; it does not initialize a headset or camera.
+
+## QR code generation
+
+`QrCodeEncoder` turns text into an immutable QR module matrix without an external encoder package. `QrCodeTextureGenerator` renders the matrix to a point-filtered `Texture2D` and can assign it to a UI `RawImage`. The current encoder uses byte mode with low error correction, supports versions 1-L through 5-L, and handles up to 106 ASCII bytes (slightly less for non-ASCII UTF-8 text, which is marked with ECI). Keep the default four-module quiet zone so scanners can detect the code.
+
+Import **QR Code Quick Start** from Package Manager's **Samples** tab. Create a Canvas with a `RawImage`, add `QrCodeTextureGenerator` to a controller and assign the target, then add `QrCodeQuickStart` and assign the generator. The sample renders a short URL on Play. For a button-driven flow, call `GenerateConfiguredValue`; for code-driven content, call `GenerateTexture(text)`. `PixelPlay.Foundation.Unity.QrCodes` is a separate adapter assembly and compiles when Unity UI (`com.unity.ugui`) is installed.
+
 ## Install in a Unity project
 
 This package is embedded in the DevTools Unity project at `Packages/com.pixelplay.foundation`. To install it in another project, open Package Manager, choose **Add package from git URL...**, and use `https://github.com/JoanDGG/DevTools.git?path=/Packages/com.pixelplay.foundation`.
@@ -66,6 +95,10 @@ The sample pause state only demonstrates a flow transition; connect its `Enter` 
 Use logical action names such as `Move`, `Confirm`, or `Grip` in gameplay code. `IInputActionReader` keeps that code independent of the keyboard, touch, gamepad, or XR bindings configured in the action asset. The optional `UnityInputActionReader` adapter is compiled when `com.unity.inputsystem` is installed. It owns the enabled state of its action map, so give it a map whose lifetime it can control.
 
 Import **Input System Quick Start** from Package Manager's **Samples** tab. Assign an `InputActionAsset`, action map name, a Vector2 action for movement, and a button action for confirmation. The sample moves its target using the logical movement action and logs confirmation presses. Add bindings for the devices your project supports to those same actions.
+
+For reusable character movement, add `InputSystemMovementController` and select `TwoDTopDown`, `TwoDIsometric`, `TwoDSidescroller`, `ThreeDTopDown`, `ThreeDCameraRelative`, or `ThreeDSidescroller`. Assign the same Input Action Asset, a Vector2 `Move` action, and optionally a Button `Jump` action. Sidescroller jump checks can use an assigned ground-check transform and layer mask; without one, the 2D mode reads Rigidbody2D contact layers, while 3D jumping requires a ground-check transform. Top-down physics bodies should have gravity disabled. Camera-relative mode uses the assigned camera or `Camera.main`.
+
+For a vehicle, add `ArcadeVehicleInputController`, assign the asset and a `Drive` Vector2 action (X = steering, Y = throttle/reverse), and optionally a `Brake` Button action. It supports either a Rigidbody or Rigidbody2D and exposes acceleration, max speed, steering, brake strength, and reverse settings. This is an arcade force-based starter controller; projects needing wheel suspension, tire friction, or realistic drivetrain behavior should use a project-specific vehicle system.
 
 ```csharp
 using PixelPlay.Foundation.Input;
@@ -139,9 +172,23 @@ settings.Save();
 int highScore = settings.GetInt("high-score", 0);
 ```
 
+### JSON save slots
+
+Use `JsonSaveSlotStore<T>` for serializable game snapshots that should live in separate files rather than individual PlayerPrefs keys. Supply an `ISaveDataSerializer` and a directory; each save records a positive schema version. Slot IDs are encoded for safe filenames, and writes go through a temporary file before replacing the previous slot. `PersistentJsonSaveSlotStore<T>` uses `Application.persistentDataPath` and Unity's `JsonUtility`.
+
+### What can be saved
+
+Use a plain `[Serializable]` class or struct as the snapshot type. Unity serializes supported **fields** such as primitive values (`int`, `float`, `bool`), strings, enums, serializable nested data classes/structs, and arrays or `List<T>` collections whose element types are supported. Common Unity value types such as `Vector2`, `Vector3`, `Quaternion`, and `Color` can also be stored. Wrap a root primitive or collection inside a serializable class.
+
+Properties, static fields, `Dictionary<TKey,TValue>`, interfaces, arbitrary polymorphic values, nested collections, jagged arrays, and multidimensional arrays are not supported by the standard Unity JSON serializer. Unity object references such as `GameObject`, `Transform`, or assets are not durable save data across app sessions; store a stable ID or resource key instead. `PersistentJsonSaveSlotStore<T>` expects a DTO, not a `MonoBehaviour` or `ScriptableObject`. See Unity's [JSON serialization rules](https://docs.unity3d.com/Manual/json-serialization.html) and [script serialization rules](https://docs.unity3d.com/Manual/script-serialization-rules.html). Increment the schema version and provide migration logic when changing a save format.
+
+Import **Save Slots Quick Start** from Package Manager's **Samples** tab and add `SaveSlotsQuickStart` to a GameObject. Assign a TMP_InputField for the username and a TextMeshProUGUI for the profile data display, then connect Buttons to the public `RegisterUser`, `LoginUser`, `SaveCurrentUserData`, `ResetCurrentUserData`, and `LogoutUser` methods. Registration creates and loads a local profile; login loads it by username. These are local profiles only, without passwords or server authentication. `SetCurrentLevel`, `SetCurrentScore`, and `SetCurrentPlayerName` update the in-memory snapshot; call `SaveCurrentUserData` to persist the changes. The label refreshes automatically and shows whether the active data has unsaved changes. Reset writes the default data to the current profile's slot. Listen to `OnStatusChanged` and `OnActiveUserChanged` to update other HUD elements. For general save code, call `Save`, `TryLoad`, `GetSlotIds`, and `Delete` on `PersistentJsonSaveSlotStore<T>`.
+
 ## HTTP requests
 
 Game logic can depend on `IHttpClient`; Unity projects can provide `UnityWebRequestHttpClient`. HTTP error status codes are returned in `HttpResponseData` for the caller to handle. Connection and data-processing failures throw `HttpTransportException`, and cancellation throws `OperationCanceledException`.
+
+Import **HTTP Request Quick Start** from Package Manager's **Samples** tab and add `HttpRequestQuickStart` to a GameObject. Configure the endpoint URL, method, optional request body, and timeout in the Inspector. The **Send Configured HTTP Request** component action or a UI Button sends it; the response event exposes the status code and body, while transport or setup failures use the error event. `GET` and `HEAD` requests omit the body. For a protected endpoint, assign a component implementing `IAccessTokenProvider`; authenticated requests require HTTPS, except for localhost testing. Keep tokens in the provider rather than in a sample field or source-controlled scene.
 
 ```csharp
 using PixelPlay.Foundation.Networking;
@@ -311,6 +358,33 @@ public class RoundExample : MonoBehaviour
     private void OnTimerCompleted() => Debug.Log("Round over");
 }
 ```
+
+## Runtime configuration from UI
+
+Unity-facing components expose public `Set...` methods for values that may change during play. Assign the component and choose a compatible method in a Unity UI event, or call it from another script. For example, `HttpRequestQuickStart.SetEndpointUrl(string)` can be connected to a `TMP_InputField`'s value-changed event, and `SetRequestMethodByIndex(int)` can receive a dropdown index. Configure the endpoint before calling `SendConfiguredRequest()`.
+
+Gameplay setters such as `FoundationQuickStart.SetRoundDurationSeconds(float)`, `SetFixedCompletionBonus(int)`, and `SetPointsPerElapsedSecond(int)` update the sample at runtime. `GameObjectPool` configuration setters must be called before its first `Acquire()` or `Initialize()`. Webcam device and resolution settings take effect on the next `StartCamera()` call. Upload and QR setters affect subsequent operations; changing QR content through `QrCodeQuickStart.SetSampleContent(string)` also generates the texture immediately.
+
+### String input to typed setters
+
+Add `StringInputSetter` to a GameObject, assign the component that owns the setter, and enter its public method name (for example `SetTimeoutSeconds`). Assign the `TMP_InputField` to its **Input Field** property, then connect a Button's **On Click** event to the parameterless `ApplyInputField()` method. This reads the field at click time and applies its current value. For immediate updates instead, connect the input's **On End Edit (String)** event to `SetFromString(string)`; `SetFromInputField(TMP_InputField)` is also available to other scripts and Unity events that pass an object argument. The bridge detects the setter parameter and supports strings, booleans (`true`/`false`), enum names, and numeric primitive types. Numeric input uses invariant culture by default (for example `1.5`); enable **Use Current Culture** to parse according to the device locale. Conversion or setter errors are reported through `OnApplyFailed` and the Console.
+
+The UI assembly references `Unity.TextMeshPro`. In Unity 6, TMP is included with uGUI; in older supported Editors, install the compatible TextMeshPro package if it is not already present. Import TMP Essential Resources if the project does not yet contain its fonts and materials.
+
+### Singleton components
+
+Inherit from `SingletonBehaviour<T>` to provide a scene-level instance. The first instance owns the static `Instance` property and duplicate GameObjects are destroyed. The base does not persist across scene changes.
+
+```csharp
+using PixelPlay.Foundation.Unity.Patterns;
+
+public sealed class GameServices : SingletonBehaviour<GameServices>
+{
+    public void Configure() { }
+}
+```
+
+If a derived component overrides `Awake`, call `base.Awake()` first and return if `Instance != this` before running its own initialization. The Photon-specific serialization and callback examples in the supplied reference script are not included, so this package remains independent of Photon PUN.
 
 ## Design direction
 

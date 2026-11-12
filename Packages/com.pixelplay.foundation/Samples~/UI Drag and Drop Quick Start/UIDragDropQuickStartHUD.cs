@@ -7,8 +7,8 @@ namespace PixelPlay.Foundation.Samples
     /// <summary>Displays accepted UI drops for the drag and drop quick start.</summary>
     public sealed class UIDragDropQuickStartHUD : MonoBehaviour
     {
-        [SerializeField] private UIDropTarget dropTarget;
-        [SerializeField] private TextMeshProUGUI statusLabel;
+        [SerializeField, Tooltip("Drop target whose accepted-item event updates the status label.")] private UIDropTarget dropTarget;
+        [SerializeField, Tooltip("TextMeshPro label showing the result of the last accepted drop.")] private TextMeshProUGUI statusLabel;
 
         private void OnEnable()
         {

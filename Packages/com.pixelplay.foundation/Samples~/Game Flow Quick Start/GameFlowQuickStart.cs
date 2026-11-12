@@ -7,6 +7,7 @@ namespace PixelPlay.Foundation.Samples
     /// <summary>Demonstrates a menu, playing, pause, and results flow with typed events.</summary>
     public sealed class GameFlowQuickStart : MonoBehaviour
     {
+        /// <summary>High-level states used by the sample game flow.</summary>
         public enum FlowState { MainMenu, Playing, Paused, Results }
 
         private readonly IEventBus _events = new EventBus();
@@ -16,12 +17,17 @@ namespace PixelPlay.Foundation.Samples
         private IGameState _paused;
         private IGameState _results;
 
+        /// <summary>Gets the event bus publishing state-change notifications.</summary>
         public IEventBus Events => _events;
+        /// <summary>Gets the current demo flow state.</summary>
         public FlowState CurrentState { get; private set; }
 
+        /// <summary>Event payload published whenever the active state changes.</summary>
         public readonly struct FlowStateChangedEvent
         {
+            /// <summary>Creates an event for the supplied state.</summary>
             public FlowStateChangedEvent(FlowState state) => State = state;
+            /// <summary>Gets the newly active state.</summary>
             public FlowState State { get; }
         }
 
@@ -37,30 +43,35 @@ namespace PixelPlay.Foundation.Samples
 
         private void Update() => _machine.Tick(Time.deltaTime);
 
+        /// <summary>Starts or restarts the demo round from the menu or results screen.</summary>
         public void StartGame()
         {
             if (CurrentState == FlowState.MainMenu || CurrentState == FlowState.Results)
                 _machine.ChangeState(_playing);
         }
 
+        /// <summary>Pauses the active round.</summary>
         public void PauseGame()
         {
             if (CurrentState == FlowState.Playing)
                 _machine.ChangeState(_paused);
         }
 
+        /// <summary>Resumes a paused round.</summary>
         public void ResumeGame()
         {
             if (CurrentState == FlowState.Paused)
                 _machine.ChangeState(_playing);
         }
 
+        /// <summary>Ends the active round and displays the results state.</summary>
         public void FinishGame()
         {
             if (CurrentState == FlowState.Playing)
                 _machine.ChangeState(_results);
         }
 
+        /// <summary>Returns to the menu from the paused or results state.</summary>
         public void ReturnToMenu()
         {
             if (CurrentState == FlowState.Paused || CurrentState == FlowState.Results)

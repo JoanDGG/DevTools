@@ -10,10 +10,10 @@ namespace PixelPlay.Foundation.Samples
     /// <summary>Shows camera, snapshot, and image upload status in TextMeshPro.</summary>
     public sealed class WebcamPreviewQuickStartHUD : MonoBehaviour
     {
-        [SerializeField] private WebcamPreview webcamPreview;
-        [SerializeField] private WebcamSnapshotCapture snapshotCapture;
-        [SerializeField] private MultipartImageUploader imageUploader;
-        [SerializeField] private TextMeshProUGUI statusLabel;
+        [SerializeField, Tooltip("Webcam component started and stopped by this sample HUD.")] private WebcamPreview webcamPreview;
+        [SerializeField, Tooltip("Capture component used to save a PNG snapshot.")] private WebcamSnapshotCapture snapshotCapture;
+        [SerializeField, Tooltip("Optional uploader used by the Capture and Upload action.")] private MultipartImageUploader imageUploader;
+        [SerializeField, Tooltip("TextMeshPro label showing camera, save, and upload status.")] private TextMeshProUGUI statusLabel;
 
         private void OnEnable()
         {
@@ -49,6 +49,7 @@ namespace PixelPlay.Foundation.Samples
                 imageUploader.OnError.RemoveListener(HandleError);
         }
 
+        /// <summary>Captures the current webcam frame, saves it, and uploads the PNG when an uploader is assigned.</summary>
         public async void CaptureAndUpload()
         {
             if (snapshotCapture == null || imageUploader == null)

@@ -1,0 +1,21 @@
+{
+  "name": "PixelPlay.Foundation.Tests",
+  "rootNamespace": "PixelPlay.Foundation.Tests",
+  "references": [
+    "PixelPlay.Foundation"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": true,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

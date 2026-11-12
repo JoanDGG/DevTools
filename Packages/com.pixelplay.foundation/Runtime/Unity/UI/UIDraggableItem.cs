@@ -9,11 +9,12 @@ namespace PixelPlay.Foundation.Unity.UI
     [RequireComponent(typeof(RectTransform), typeof(CanvasGroup))]
     public sealed class UIDraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
+        /// <summary>Unity event invoked with the accepting target after a successful drop.</summary>
         [Serializable]
         public sealed class DropAcceptedEvent : UnityEvent<UIDropTarget> { }
 
-        [SerializeField] private string itemType;
-        [SerializeField] private DropAcceptedEvent onDropAccepted = new DropAcceptedEvent();
+        [SerializeField, Tooltip("Logical item type checked against a target's accepted type. Leave empty for the default type.")] private string itemType;
+        [SerializeField, Tooltip("Invoked after a target accepts this item.")] private DropAcceptedEvent onDropAccepted = new DropAcceptedEvent();
 
         private RectTransform _rectTransform;
         private Canvas _dragCanvas;
@@ -30,6 +31,9 @@ namespace PixelPlay.Foundation.Unity.UI
 
         /// <summary>Gets the inspector callback invoked after a drop target accepts this item.</summary>
         public DropAcceptedEvent OnDropAccepted => onDropAccepted;
+
+        /// <summary>Changes the logical item type used by drop-target filtering.</summary>
+        public void SetItemType(string value) => itemType = value ?? string.Empty;
 
         private void Awake()
         {

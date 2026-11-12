@@ -8,16 +8,30 @@ namespace PixelPlay.Foundation.Samples
     /// <summary>Demonstrates device-independent movement and confirmation actions.</summary>
     public sealed class InputSystemQuickStart : MonoBehaviour
     {
-        [SerializeField] private InputActionAsset inputActions;
-        [SerializeField] private string actionMapName = "Player";
-        [SerializeField] private string moveActionName = "Move";
-        [SerializeField] private string confirmActionName = "Submit";
-        [SerializeField] private Transform movementTarget;
-        [SerializeField, Min(0f)] private float movementSpeed = 4f;
+        [SerializeField, Tooltip("Input Action Asset containing the actions used by this sample.")] private InputActionAsset inputActions;
+        [SerializeField, Tooltip("Action map that contains the movement and confirm actions.")] private string actionMapName = "Player";
+        [SerializeField, Tooltip("Vector2 action read to move the target.")] private string moveActionName = "Move";
+        [SerializeField, Tooltip("Button action that logs a confirmation when pressed.")] private string confirmActionName = "Submit";
+        [SerializeField, Tooltip("Transform moved by the sample; leave empty to log movement only.")] private Transform movementTarget;
+        [SerializeField, Min(0f), Tooltip("Movement distance per second in world units.")] private float movementSpeed = 4f;
 
         private UnityInputActionReader _input;
         private InputActionId _moveAction;
         private InputActionId _confirmAction;
+
+        /// <summary>Gets the current world-space movement speed.</summary>
+        public float MovementSpeed => movementSpeed;
+
+        /// <summary>Changes movement speed at runtime, for example from a settings slider.</summary>
+        public void SetMovementSpeed(float value)
+        {
+            if (float.IsNaN(value) || float.IsInfinity(value) || value < 0f)
+                throw new System.ArgumentOutOfRangeException(nameof(value), "Movement speed must be finite and non-negative.");
+            movementSpeed = value;
+        }
+
+        /// <summary>Changes the object moved by this sample.</summary>
+        public void SetMovementTarget(Transform value) => movementTarget = value;
 
         private void Awake()
         {

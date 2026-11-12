@@ -8,18 +8,19 @@ namespace PixelPlay.Foundation.Unity.Gestures
     /// <summary>Connects a hand gesture provider to the confidence and stability filter.</summary>
     public sealed class GestureRecognitionFilterBehaviour : MonoBehaviour
     {
+        /// <summary>Unity event with hand ID, gesture ID, and a true value on start or false on end.</summary>
         [Serializable]
         public sealed class GestureStateEvent : UnityEvent<string, string, bool> { }
 
-        [SerializeField] private MonoBehaviour providerComponent;
-        [SerializeField] private bool startProviderOnEnable;
-        [SerializeField] private bool stopProviderOnDisable;
-        [SerializeField, Range(0f, 1f)] private float startConfidence = 0.7f;
-        [SerializeField, Range(0f, 1f)] private float releaseConfidence = 0.45f;
-        [SerializeField, Min(0f)] private float activationSeconds = 0.12f;
-        [SerializeField, Min(0f)] private float releaseSeconds = 0.18f;
-        [SerializeField] private GestureStateEvent onGestureStateChanged = new GestureStateEvent();
-        [SerializeField] private UnityEvent<string> onProviderError = new UnityEvent<string>();
+        [SerializeField, Tooltip("Component implementing IHandGestureProvider.")] private MonoBehaviour providerComponent;
+        [SerializeField, Tooltip("Starts recognition when this behaviour is enabled, if the provider supports it.")] private bool startProviderOnEnable;
+        [SerializeField, Tooltip("Stops recognition when this behaviour is disabled, if the provider supports it.")] private bool stopProviderOnDisable;
+        [SerializeField, Range(0f, 1f), Tooltip("Minimum confidence required before a candidate can begin activation.")] private float startConfidence = 0.7f;
+        [SerializeField, Range(0f, 1f), Tooltip("Lower confidence threshold that keeps an already active gesture recognized.")] private float releaseConfidence = 0.45f;
+        [SerializeField, Min(0f), Tooltip("How long a candidate must remain stable before the filter starts it, in seconds.")] private float activationSeconds = 0.12f;
+        [SerializeField, Min(0f), Tooltip("How long a missing or weak candidate is tolerated before the filter ends it, in seconds.")] private float releaseSeconds = 0.18f;
+        [SerializeField, Tooltip("Invoked when a filtered gesture starts or ends.")] private GestureStateEvent onGestureStateChanged = new GestureStateEvent();
+        [SerializeField, Tooltip("Invoked when the provider reports an error; receives its message.")] private UnityEvent<string> onProviderError = new UnityEvent<string>();
 
         private IHandGestureProvider _provider;
         private GestureRecognitionFilter _filter;

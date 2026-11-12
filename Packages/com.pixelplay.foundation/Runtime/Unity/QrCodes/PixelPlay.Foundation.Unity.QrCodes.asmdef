@@ -1,0 +1,25 @@
+{
+  "name": "PixelPlay.Foundation.Unity.QrCodes",
+  "rootNamespace": "PixelPlay.Foundation.Unity.QrCodes",
+  "references": [
+    "PixelPlay.Foundation",
+    "Unity.ugui"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [
+    "PIXELPLAY_UGUI_PACKAGE"
+  ],
+  "versionDefines": [
+    {
+      "name": "com.unity.ugui",
+      "expression": "1.0.0",
+      "define": "PIXELPLAY_UGUI_PACKAGE"
+    }
+  ],
+  "noEngineReferences": false
+}

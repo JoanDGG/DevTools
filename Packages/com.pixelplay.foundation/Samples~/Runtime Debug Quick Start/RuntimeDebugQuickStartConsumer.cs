@@ -7,7 +7,7 @@ namespace PixelPlay.Foundation.Samples
     /// <summary>Demonstrates game code reading and reacting to tunable round values.</summary>
     public sealed class RuntimeDebugQuickStartConsumer : MonoBehaviour
     {
-        [SerializeField] private RuntimeTuningRegistryBehaviour tuningRegistry;
+        [SerializeField, Tooltip("Registry used to read the round duration and round count settings.")] private RuntimeTuningRegistryBehaviour tuningRegistry;
         private FloatTunable _duration;
         private IntegerTunable _roundCount;
 

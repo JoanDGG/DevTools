@@ -8,13 +8,14 @@ namespace PixelPlay.Foundation.Unity.Camera
     /// <summary>Encodes a webcam frame as PNG bytes and optionally saves it locally.</summary>
     public sealed class WebcamSnapshotCapture : MonoBehaviour
     {
+        /// <summary>Unity event that passes a saved file path or error message.</summary>
         [Serializable]
         public sealed class PathEvent : UnityEvent<string> { }
 
-        [SerializeField] private WebcamPreview cameraSource;
-        [SerializeField] private string fileNamePrefix = "webcam_capture";
-        [SerializeField] private PathEvent onImageSaved = new PathEvent();
-        [SerializeField] private PathEvent onError = new PathEvent();
+        [SerializeField, Tooltip("WebcamPreview component that supplies the current frame.")] private WebcamPreview cameraSource;
+        [SerializeField, Tooltip("Prefix for unique PNG filenames saved under persistentDataPath.")] private string fileNamePrefix = "webcam_capture";
+        [SerializeField, Tooltip("Invoked after a PNG is saved; receives the absolute path.")] private PathEvent onImageSaved = new PathEvent();
+        [SerializeField, Tooltip("Invoked when frame capture or file writing fails; receives the reason.")] private PathEvent onError = new PathEvent();
 
         /// <summary>Gets the event raised with the full path after an image is saved.</summary>
         public PathEvent OnImageSaved => onImageSaved;

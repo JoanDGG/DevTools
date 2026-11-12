@@ -2,7 +2,7 @@
   "name": "com.pixelplay.foundation",
   "version": "0.1.0",
   "displayName": "Pixel Play Foundation",
-  "description": "Reusable, platform-independent gameplay systems for Pixel Play Unity projects.",
+  "description": "Reusable, platform-independent gameplay systems for Pixel Play Unity projects. See Samples for quick start demos.",
   "unity": "2021.3",
   "samples": [
     {
@@ -19,6 +19,11 @@
       "displayName": "Input System Quick Start",
       "description": "Maps logical input actions to movement and confirmation through the Unity Input System.",
       "path": "Samples~/Input System Quick Start"
+    },
+    {
+      "displayName": "HTTP Request Quick Start",
+      "description": "Sends a configurable HTTP request and exposes the status code and response body through Unity events.",
+      "path": "Samples~/HTTP Request Quick Start"
     },
     {
       "displayName": "UI Drag and Drop Quick Start",
@@ -44,9 +49,30 @@
       "displayName": "Gesture Recognition Quick Start",
       "description": "Filters provider gesture candidates with confidence hysteresis and stable start/end events.",
       "path": "Samples~/Gesture Recognition Quick Start"
+    },
+    {
+      "displayName": "QR Code Quick Start",
+      "description": "Encodes text or a URL into a QR matrix and displays it as a UI texture.",
+      "path": "Samples~/QR Code Quick Start"
+    },
+    {
+      "displayName": "Save Slots Quick Start",
+      "description": "Saves and loads versioned JSON game snapshots under persistentDataPath.",
+      "path": "Samples~/Save Slots Quick Start"
+    },
+    {
+      "displayName": "XR Session Quick Start",
+      "description": "Demonstrates a provider-independent asynchronous lifecycle for VR, AR, and mixed reality sessions.",
+      "path": "Samples~/XR Session Quick Start"
+    },
+    {
+      "displayName": "Object Pool Quick Start",
+      "description": "Shows how to prewarm, acquire, reuse, and release prefab instances with a bounded pool.",
+      "path": "Samples~/Object Pool Quick Start"
     }
   ],
   "author": {
-    "name": "Pixel Play"
+    "name": "Joan Daniel Guerrero García",
+    "email": "jguerrero@digitalpixel.studio"
   }
 }

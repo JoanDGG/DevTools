@@ -3,7 +3,8 @@
   "rootNamespace": "PixelPlay.Foundation.Unity.UI",
   "references": [
     "PixelPlay.Foundation",
-    "Unity.ugui"
+    "Unity.ugui",
+    "Unity.TextMeshPro"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

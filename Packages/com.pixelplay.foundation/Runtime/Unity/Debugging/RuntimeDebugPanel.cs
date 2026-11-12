@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using PixelPlay.Foundation.Debugging;
+using PixelPlay.Foundation.Unity.Persistence;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -8,12 +9,16 @@ namespace PixelPlay.Foundation.Unity.Debugging
     /// <summary>Development-only IMGUI panel for project tunables and runtime diagnostics.</summary>
     public sealed class RuntimeDebugPanel : MonoBehaviour
     {
-        [SerializeField] private RuntimeTuningRegistryBehaviour tuningRegistry;
-        [SerializeField] private bool showOnEnable = true;
-        [SerializeField] private bool developmentBuildOnly = true;
-        [SerializeField] private bool captureInfoLogs;
-        [SerializeField, Min(1)] private int maximumLogEntries = 40;
-        [SerializeField, Min(1)] private int visibleLogEntries = 6;
+        [SerializeField, Tooltip("Registry whose values appear in the tuning section of this panel.")] private RuntimeTuningRegistryBehaviour tuningRegistry;
+        [SerializeField, Tooltip("Shows the panel when this component is enabled.")] private bool showOnEnable = true;
+        [SerializeField, Tooltip("When enabled, hides the panel outside the Editor and development builds.")] private bool developmentBuildOnly = true;
+        [SerializeField, Tooltip("Includes informational messages in the log list; warnings and errors are always captured.")] private bool captureInfoLogs;
+        [SerializeField, Min(1), Tooltip("Maximum number of recent log entries retained in memory.")] private int maximumLogEntries = 40;
+        [SerializeField, Min(1), Tooltip("Number of recent log entries displayed at once.")] private int visibleLogEntries = 6;
+        [Header("Saved Tuning Values")]
+        [SerializeField, Tooltip("Adds controls that save and load tuning values through PlayerPrefs.")] private bool enablePersistence;
+        [SerializeField, Tooltip("Loads values from PlayerPrefs each time this panel is enabled.")] private bool loadSavedValuesOnEnable;
+        [SerializeField, Tooltip("Prefix that keeps this panel's saved keys separate from other PlayerPrefs values.")] private string persistenceKeyPrefix = "PixelPlay.DebugTuning.";
 
         private readonly object _logLock = new object();
         private readonly List<string> _logs = new List<string>();
@@ -27,6 +32,8 @@ namespace PixelPlay.Foundation.Unity.Debugging
         {
             _visible = showOnEnable;
             Application.logMessageReceivedThreaded += HandleLog;
+            if (enablePersistence && loadSavedValuesOnEnable)
+                LoadTuningSettings();
         }
 
         private void OnDisable()
@@ -53,6 +60,29 @@ namespace PixelPlay.Foundation.Unity.Debugging
 
         /// <summary>Toggles visibility; no particular input backend is required.</summary>
         public void TogglePanel() => _visible = !_visible;
+
+        /// <summary>Saves all registered tuning values to PlayerPrefs under the configured key prefix.</summary>
+        public void SaveTuningSettings()
+        {
+            RuntimeTuningRegistry registry = tuningRegistry != null ? tuningRegistry.Registry : null;
+            if (!enablePersistence || registry == null)
+                return;
+
+            registry.SaveTo(new PlayerPrefsKeyValueStore(), persistenceKeyPrefix ?? string.Empty);
+            Debug.Log("Runtime tuning values saved.", this);
+        }
+
+        /// <summary>Resets values, then applies any saved values that still fit their current bounds.</summary>
+        public void LoadTuningSettings()
+        {
+            RuntimeTuningRegistry registry = tuningRegistry != null ? tuningRegistry.Registry : null;
+            if (!enablePersistence || registry == null)
+                return;
+
+            registry.ResetAll();
+            int loadedCount = registry.LoadFrom(new PlayerPrefsKeyValueStore(), persistenceKeyPrefix ?? string.Empty);
+            Debug.Log($"Loaded {loadedCount} saved runtime tuning values.", this);
+        }
 
         private void HandleLog(string condition, string stackTrace, LogType type)
         {
@@ -135,6 +165,16 @@ namespace PixelPlay.Foundation.Unity.Debugging
 
             if (GUILayout.Button("Reset Defaults"))
                 registry.ResetAll();
+
+            if (enablePersistence)
+            {
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("Save Values"))
+                    SaveTuningSettings();
+                if (GUILayout.Button("Load Saved"))
+                    LoadTuningSettings();
+                GUILayout.EndHorizontal();
+            }
         }
 
         private void DrawTunable(RuntimeTunable tunable)

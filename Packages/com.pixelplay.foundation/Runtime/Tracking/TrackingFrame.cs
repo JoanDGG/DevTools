@@ -9,6 +9,12 @@ namespace PixelPlay.Foundation.Tracking
     {
         private readonly ReadOnlyCollection<TrackedPerson> _persons;
 
+        /// <summary>Creates a tracking snapshot for one source image frame.</summary>
+        /// <param name="frameId">Provider's frame identifier.</param>
+        /// <param name="timestampSeconds">Capture time in seconds using the provider's time origin.</param>
+        /// <param name="imageWidth">Source image width in pixels; must be positive.</param>
+        /// <param name="imageHeight">Source image height in pixels; must be positive.</param>
+        /// <param name="persons">Detected people; null is treated as an empty collection.</param>
         public TrackingFrame(long frameId, double timestampSeconds, int imageWidth, int imageHeight,
             IEnumerable<TrackedPerson> persons)
         {

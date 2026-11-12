@@ -9,25 +9,26 @@ namespace PixelPlay.Foundation.Unity.Camera
     /// <summary>Starts a webcam and displays its live feed in a UI RawImage.</summary>
     public sealed class WebcamPreview : MonoBehaviour
     {
+        /// <summary>Unity event that passes a selected device name or an error message.</summary>
         [Serializable]
         public sealed class StatusEvent : UnityEvent<string> { }
 
         [Header("Preview")]
-        [SerializeField] private RawImage preview;
-        [SerializeField] private bool playOnEnable = true;
-        [SerializeField] private bool mirrorFrontFacingCamera = true;
+        [SerializeField, Tooltip("RawImage that displays the active webcam feed.")] private RawImage preview;
+        [SerializeField, Tooltip("Starts the selected camera when this component is enabled.")] private bool playOnEnable = true;
+        [SerializeField, Tooltip("Mirrors the displayed preview when the selected device is front-facing.")] private bool mirrorFrontFacingCamera = true;
 
         [Header("Device")]
-        [SerializeField] private string preferredDeviceName;
-        [SerializeField] private bool preferFrontFacing;
-        [SerializeField, Min(16)] private int requestedWidth = 1280;
-        [SerializeField, Min(16)] private int requestedHeight = 720;
-        [SerializeField, Min(1)] private int requestedFrameRate = 30;
-        [SerializeField, Min(1f)] private float startupTimeoutSeconds = 10f;
+        [SerializeField, Tooltip("Exact device name to select; leave empty to use the front-facing preference or first available device.")] private string preferredDeviceName;
+        [SerializeField, Tooltip("When no exact device name is set, select a front-facing camera if available.")] private bool preferFrontFacing;
+        [SerializeField, Min(16), Tooltip("Requested capture width in pixels; the device may provide another supported size.")] private int requestedWidth = 1280;
+        [SerializeField, Min(16), Tooltip("Requested capture height in pixels; the device may provide another supported size.")] private int requestedHeight = 720;
+        [SerializeField, Min(1), Tooltip("Requested capture frame rate; the device may provide another rate.")] private int requestedFrameRate = 30;
+        [SerializeField, Min(1f), Tooltip("Seconds to wait for the webcam to start before reporting a timeout.")] private float startupTimeoutSeconds = 10f;
 
         [Header("Events")]
-        [SerializeField] private StatusEvent onCameraStarted = new StatusEvent();
-        [SerializeField] private StatusEvent onError = new StatusEvent();
+        [SerializeField, Tooltip("Invoked after the camera starts; receives the selected device name.")] private StatusEvent onCameraStarted = new StatusEvent();
+        [SerializeField, Tooltip("Invoked when permission, device selection, or startup fails; receives the reason.")] private StatusEvent onError = new StatusEvent();
 
         private WebCamTexture _webcam;
         private Coroutine _startupCoroutine;
@@ -49,6 +50,47 @@ namespace PixelPlay.Foundation.Unity.Camera
 
         /// <summary>Gets whether a camera stream is currently playing.</summary>
         public bool IsPlaying => _webcam != null && _webcam.isPlaying;
+
+        /// <summary>Sets the exact device name to select on the next call to <see cref="StartCamera"/>.</summary>
+        public void SetPreferredDeviceName(string value) => preferredDeviceName = value?.Trim() ?? string.Empty;
+
+        /// <summary>Sets whether device selection prefers a front-facing camera when no exact name is set.</summary>
+        public void SetPreferFrontFacing(bool value) => preferFrontFacing = value;
+
+        /// <summary>Sets whether the displayed feed is mirrored for front-facing cameras.</summary>
+        public void SetMirrorFrontFacingCamera(bool value) => mirrorFrontFacingCamera = value;
+
+        /// <summary>Sets the requested capture width. Takes effect on the next camera start.</summary>
+        public void SetRequestedWidth(int value)
+        {
+            if (value < 16)
+                throw new ArgumentOutOfRangeException(nameof(value), "Requested width must be at least 16 pixels.");
+            requestedWidth = value;
+        }
+
+        /// <summary>Sets the requested capture height. Takes effect on the next camera start.</summary>
+        public void SetRequestedHeight(int value)
+        {
+            if (value < 16)
+                throw new ArgumentOutOfRangeException(nameof(value), "Requested height must be at least 16 pixels.");
+            requestedHeight = value;
+        }
+
+        /// <summary>Sets the requested capture frame rate. Takes effect on the next camera start.</summary>
+        public void SetRequestedFrameRate(int value)
+        {
+            if (value < 1)
+                throw new ArgumentOutOfRangeException(nameof(value), "Requested frame rate must be positive.");
+            requestedFrameRate = value;
+        }
+
+        /// <summary>Sets the startup timeout in seconds.</summary>
+        public void SetStartupTimeoutSeconds(float value)
+        {
+            if (float.IsNaN(value) || float.IsInfinity(value) || value < 1f)
+                throw new ArgumentOutOfRangeException(nameof(value), "Startup timeout must be a finite value of at least one second.");
+            startupTimeoutSeconds = value;
+        }
 
         /// <summary>Gets the names of camera devices currently available to Unity.</summary>
         public static string[] GetDeviceNames()
